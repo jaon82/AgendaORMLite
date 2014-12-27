@@ -7,7 +7,7 @@ import com.j256.ormlite.table.DatabaseTable;
  * Classe entidade para armazenar dados de Contatos da agenda
  */
 @DatabaseTable
-public class Contato {
+public class Contato implements IEntidade {
 
     @DatabaseField(generatedId = true)
     private Long id;

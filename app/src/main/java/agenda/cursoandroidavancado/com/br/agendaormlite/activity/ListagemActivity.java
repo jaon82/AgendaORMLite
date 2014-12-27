@@ -2,7 +2,6 @@ package agenda.cursoandroidavancado.com.br.agendaormlite.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,22 +48,15 @@ public class ListagemActivity extends ActionBarActivity {
         btSalvar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ContatoDAO dao = new ContatoDAO(ListagemActivity.this);
-                try {
-                    dao.cadastrar(formularioHelper.getContato());
-                    carregarLista();
-                    adapter.notifyDataSetChanged();
-                    formularioHelper.setContato(new Contato());
-                } catch (SQLException e) {
-                    Log.e(TAG, "falha ao salvar Contato");
-                } finally {
-                    dao.close();
-                }
+                ContatoDAO dao = ContatoDAO.getInstance();
+                dao.createOrUpdate(formularioHelper.getContato());
+                carregarLista();
+                adapter.notifyDataSetChanged();
+                formularioHelper.setContato(new Contato());
             }
         });
 
     }
-
     /**
      * Metodo que solicita servico da camada de modelo
      * e atualiza a lista de contatos exibida
@@ -74,23 +65,15 @@ public class ListagemActivity extends ActionBarActivity {
         //limpa a coleção de contatos exibidos
         listaDeContatos.clear();
         //Criacao do objeto de persistencia
-        ContatoDAO dao = new ContatoDAO(this);
+        ContatoDAO dao = ContatoDAO.getInstance();
         List<Contato> lista = null;
-        try {
             //Solicitacao de servico da camada model
-            lista = dao.listar();
-        } catch (SQLException e) {
-            //tratamento da exceção lançada pela model
-            Log.e(TAG, "falha ao carregar lista");
-        }
+        lista = dao.findAll();
         //preenchimento da lista de contatos
         for (Contato contato : lista) {
             listaDeContatos.add(contato.toString());
         }
-        //Encerramento da conexão
-        dao.close();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
