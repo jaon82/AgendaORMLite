@@ -1,6 +1,8 @@
 package agenda.cursoandroidavancado.com.br.agendaormlite.model.bean;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
 /**
  * Classe entidade para armazenar dados de Contatos da agenda
  */
@@ -19,8 +21,9 @@ public class Contato {
 
     @Override
     public String toString() {
-        return nome + "[ " + telefone + " ]";
+        return nome + " [ " + telefone + " ]";
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -33,6 +36,7 @@ public class Contato {
 
         return true;
     }
+
     @Override
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
