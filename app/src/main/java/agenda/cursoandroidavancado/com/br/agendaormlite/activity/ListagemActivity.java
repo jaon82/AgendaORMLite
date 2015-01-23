@@ -2,6 +2,7 @@ package agenda.cursoandroidavancado.com.br.agendaormlite.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,11 +50,17 @@ public class ListagemActivity extends ActionBarActivity {
         btSalvar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ContatoDAO dao = ContatoDAO.getInstance();
-                dao.createOrUpdate(formularioHelper.getContato());
-                carregarLista();
-                adapter.notifyDataSetChanged();
-                formularioHelper.setContato(new Contato());
+                ContatoDAO dao = new ContatoDAO(ListagemActivity.this);
+                try {
+                    dao.cadastrar(formularioHelper.getContato());
+                    carregarLista();
+                    adapter.notifyDataSetChanged();
+                    formularioHelper.setContato(new Contato());
+                }catch(SQLException e){
+                    Log.e(TAG,"faha ao salvar contato");
+                }finally{
+                    dao.close();
+                }
             }
         });
 
@@ -65,14 +73,19 @@ public class ListagemActivity extends ActionBarActivity {
         //limpa a coleção de contatos exibidos
         listaDeContatos.clear();
         //Criacao do objeto de persistencia
-        ContatoDAO dao = ContatoDAO.getInstance();
+        ContatoDAO dao = new ContatoDAO(this);
         List<Contato> lista = null;
+        try {
             //Solicitacao de servico da camada model
-        lista = dao.findAll();
+            lista=dao.listar();
+        }catch (SQLException e){
+            Log.e(TAG,"falha ao carregar lista");
+        }
         //preenchimento da lista de contatos
         for (Contato contato : lista) {
             listaDeContatos.add(contato.toString());
         }
+        dao.close();
     }
 
     @Override
